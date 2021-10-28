@@ -6,8 +6,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import com.example.demo.dto.EmailDTO;
+import com.example.demo.services.exceptions.EmailException;
 import com.sendgrid.Method;
 import com.sendgrid.Request;
 import com.sendgrid.Response;
@@ -38,12 +38,11 @@ public class EmailService {
 			Response response = sendGrid.api(request);			
 			if (response.getStatusCode() >= 400 && response.getStatusCode() <= 500) {
 				LOG.error("Erro ao enviar email: " + response.getBody());
+				throw new EmailException(response.getBody());
 			}
-			else {
 				LOG.info("Email enviado! Status = " + response.getStatusCode());
-			}
 		} catch (IOException e) {
-			e.printStackTrace();
+			throw new EmailException(e.getMessage());
 		}
 	}
 }
